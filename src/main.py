@@ -12,18 +12,26 @@ LOG = True
 
 def signal_handler(sig, frame):
     if LOG:
-        cprint("[LOG]", "green", "")
-        print("-> Arrêt demandé")
+        cprint("[LOG]", "yellow", end="")
+        print("-> Arret demande")
     stop_event.set()
 
 def main():
+
+    if LOG:
+        cprint("[LOG]", "green", end="")
+        print("-> Demarrage ...")
+
     liste_id_json = []
 
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
 
+    # mettre le thread de flask en dehors pour eviter la boucle infini en cas de join
+    flask_thread = threading.Thread(target=api.run_listener_api)
+    flask_thread.start()
+
     threads = [
-        threading.Thread(target=api.run_listener_api),
         threading.Thread(target=wd.worker, args=(LOG, stop_event, liste_id_json,)),
         threading.Thread(target=qm.manage_queue, args=(LOG, stop_event, liste_id_json,))
     ]
@@ -31,8 +39,23 @@ def main():
     for t in threads:
         t.start()
 
+    if LOG:
+        cprint("[LOG]", "green", end="")
+        print("-> Application demarre avec succes")
+
+
     for t in threads:
         t.join()
+
+    if LOG:
+        cprint("[LOG]", "yellow", end="")
+        print("-> Arrêt du serveur Flask...")
+    api.server_instance.stop()
+    flask_thread.join()
+
+    if LOG:
+        cprint("[LOG]", "green", end="")
+        print("-> END")
 
 if __name__ == "__main__":
     main()
