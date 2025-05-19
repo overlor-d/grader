@@ -1,0 +1,9 @@
+{
+    "langage" : "C",
+    "test_id" : "2",
+    "user_id" : "10",
+    
+    "code_path": "./testFiles/fichierC/exercice_1.c",
+    "test_path": "./testFiles/fichierC/exercice_1_correction.c"
+
+}
