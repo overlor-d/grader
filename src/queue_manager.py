@@ -5,7 +5,7 @@ from utils import cprint
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-def manage_queue(LOG, stop_event, liste_id):
+def manage_queue(LOG, lockers, stop_event, liste_id):
     
     while not stop_event.is_set():
         pass

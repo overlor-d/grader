@@ -8,12 +8,16 @@ import queue_manager as qm
 from utils import cprint
 
 stop_event = threading.Event()
+lockers = {
+    "liste_id_json" : threading.Lock(),
+}
+
 LOG = True
 
 def signal_handler(sig, frame):
     if LOG:
         cprint("[LOG]", "yellow", end="")
-        print("-> Arret demande")
+        print("-> Arret demande ...")
     stop_event.set()
 
 def main():
@@ -29,19 +33,19 @@ def main():
 
     # mettre le thread de flask en dehors pour eviter la boucle infini en cas de join
     flask_thread = threading.Thread(target=api.run_listener_api)
-    flask_thread.start()
 
     threads = [
-        threading.Thread(target=wd.worker, args=(LOG, stop_event, liste_id_json,)),
-        threading.Thread(target=qm.manage_queue, args=(LOG, stop_event, liste_id_json,))
+        threading.Thread(target=qm.manage_queue, args=(LOG, lockers, stop_event, liste_id_json,)),
+        threading.Thread(target=wd.worker, args=(LOG, lockers, stop_event, liste_id_json,))
     ]
 
     for t in threads:
         t.start()
+    flask_thread.start()
 
     if LOG:
         cprint("[LOG]", "green", end="")
-        print("-> Application demarre avec succes")
+        print("-> Application demarree avec succes")
 
 
     for t in threads:

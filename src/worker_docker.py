@@ -3,7 +3,7 @@ import time
 from utils import cprint
 
 
-def worker(log, stop_event, liste_id):
+def worker(log, lockers, stop_event, liste_id):
 
     while not stop_event.is_set():
         time.sleep(1)
