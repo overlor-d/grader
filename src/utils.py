@@ -1,5 +1,7 @@
 import os
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 def cprint(text, color="default", end="\n"):
     colors = {
         "red": "\033[91m",
@@ -17,3 +19,7 @@ def cprint(text, color="default", end="\n"):
 def is_directory_empty(path):
 
     return not any(os.scandir(path))
+
+
+if __name__ == "__main__" :
+    print(is_directory_empty(os.path.join(BASE_DIR, "grader_queue", "arrival")))

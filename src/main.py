@@ -27,13 +27,13 @@ def main():
         cprint("[LOG]", "green", end="")
         print("-> Demarrage ...")
 
-    liste_id_json = []
+    liste_id_json = [[],[]]
 
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
 
     # mettre le thread de flask en dehors pour eviter la boucle infini en cas de join
-    flask_thread = threading.Thread(target=api.run_listener_api)
+    flask_thread = threading.Thread(target=api.run_listener_api, args=(LOG, lockers, liste_id_json[0]))
 
     threads = [
         threading.Thread(target=qm.manage_queue, args=(LOG, lockers, stop_event, liste_id_json,)),
