@@ -3,6 +3,8 @@ import os, json
 from datetime import datetime
 from werkzeug.serving import make_server
 
+from utils import cprint
+
 app = Flask(__name__)
 ARRIVAL_DIR = os.path.join("src", "grader_queue", "arrival")
 
@@ -13,7 +15,11 @@ def submit():
         return jsonify({"error": "Invalid JSON"}), 400
 
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S%f")
-    filename = f"submission_{timestamp}.json"
+
+    with server_instance.lockers["liste_id_json"]:
+        server_instance.liste_timestamp.append(str(timestamp))
+
+    filename = f"{timestamp}.json"
     filepath = os.path.join(ARRIVAL_DIR, filename)
 
     os.makedirs(ARRIVAL_DIR, exist_ok=True)
@@ -28,13 +34,33 @@ class FlaskServer:
         self.ctx = app.app_context()
         self.ctx.push()
 
+        self.liste_timestamp = None
+        self.log = None
+        self.lockers = None
+
     def run(self):
+            
+        if self.log :
+            cprint("[LOG]", "green", "")
+            print("[listener][start]")
+
         self.server.serve_forever()
 
     def stop(self):
+        
         self.server.shutdown()
+
+        if self.log :
+            cprint("[LOG]", "green", "")
+            print("[listener][end]")
+
 
 server_instance = FlaskServer()
 
-def run_listener_api():
+def run_listener_api(LOG, lockers, liste_id):
+
+    server_instance.liste_timestamp = liste_id
+    server_instance.log = LOG
+    server_instance.lockers = lockers
+
     server_instance.run()

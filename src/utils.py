@@ -1,4 +1,4 @@
-
+import os
 
 def cprint(text, color="default", end="\n"):
     colors = {
@@ -12,3 +12,8 @@ def cprint(text, color="default", end="\n"):
         "default": "\033[0m"
     }
     print(f"{colors.get(color, colors['default'])}{text}\033[0m", end=end)
+
+
+def is_directory_empty(path):
+
+    return not any(os.scandir(path))
