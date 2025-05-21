@@ -5,12 +5,14 @@ import time
 import listener_api as api
 import worker_docker as wd
 import queue_manager as qm
+from queue import Queue
 
 from utils import cprint
 
 stop_event = threading.Event()
 lockers = {
     "liste_id_json" : threading.Lock(),
+    "liste_objet_submissions" : threading.Lock(),
 }
 
 LOG = True
@@ -27,17 +29,19 @@ def main():
         cprint("[LOG]", "green", end="")
         print("-> Demarrage ...")
 
-    liste_id_json = [[],[]]
+    liste_id_json = []
+    liste_submission = []
+
 
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
 
     # mettre le thread de flask en dehors pour eviter la boucle infini en cas de join
-    flask_thread = threading.Thread(target=api.run_listener_api, args=(LOG, lockers, liste_id_json[0]))
+    flask_thread = threading.Thread(target=api.run_listener_api, args=(LOG, lockers, liste_id_json))
 
     threads = [
-        threading.Thread(target=qm.manage_queue, args=(LOG, lockers, stop_event, liste_id_json,)),
-        threading.Thread(target=wd.worker, args=(LOG, lockers, stop_event, liste_id_json,))
+        threading.Thread(target=qm.manage_queue, args=(LOG, lockers, stop_event, liste_id_json,liste_submission,)),
+        threading.Thread(target=wd.worker, args=(LOG, lockers, stop_event,liste_submission, ))
     ]
 
     for t in threads:

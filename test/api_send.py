@@ -1,12 +1,13 @@
 import requests
 import json
+import random
 
 URL = "http://localhost:5000/submit"
 
 payload = {
     "langage": "C",
-    "test_id": "1",
-    "user_id": "11",
+    "test_id": str(random.randint(0,100)),
+    "user_id": str(random.randint(0,100)),
     "code_path": "./fichierC/exercice_1.c",
     "test_path": "./fichierC/exercice_1_correction.c"
 }
