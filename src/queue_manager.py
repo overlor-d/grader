@@ -4,6 +4,8 @@ import shutil
 
 from utils import cprint, is_directory_empty
 
+from SubmissionClass import SubmissionJob
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 def manage_queue(LOG, lockers, stop_event, liste_id):
