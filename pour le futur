@@ -1,3 +1,5 @@
 faire une classe qui regroupe toutes les variables et tableaux de système type log afin d'avoir des appels de fonctions plus fluides rassembler le log les lockers etc dans une seule classe de gestion système.
 
 ajouter la logique du try except dans mes différents programme pour + de robustesse
+
+dans le install.sh inclure la construction des images docker pour chaque langage
