@@ -16,8 +16,7 @@ def submit():
 
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S%f")
 
-    with server_instance.lockers["liste_id_json"]:
-        server_instance.liste_timestamp.append(str(timestamp))
+    server_instance.liste_timestamp.put(str(timestamp))
 
     filename = f"{timestamp}.json"
     filepath = os.path.join(ARRIVAL_DIR, filename)
@@ -57,9 +56,9 @@ class FlaskServer:
 
 server_instance = FlaskServer()
 
-def run_listener_api(LOG, lockers, liste_id):
+def run_listener_api(LOG, lockers, queue_id):
 
-    server_instance.liste_timestamp = liste_id
+    server_instance.liste_timestamp = queue_id
     server_instance.log = LOG
     server_instance.lockers = lockers
 

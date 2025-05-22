@@ -1,7 +1,7 @@
 import time
 
 from utils import cprint
-
+import queue
 
 def worker(LOG, lockers, stop_event, liste_submission):
 
@@ -9,13 +9,16 @@ def worker(LOG, lockers, stop_event, liste_submission):
         cprint("[LOG]", "green", "")
         print("[worker][start]")
 
-    i = len(liste_submission)
 
     while not stop_event.is_set():
-        if len(liste_submission) != i:
-            print("nouvel element à traiter")
-            i = len(liste_submission)
-            print(liste_submission[-1])
+
+        while not liste_submission.empty():
+            try:
+                objet = liste_submission.get_nowait()
+                print(objet)
+                liste_submission.task_done()
+            except queue.Empty:
+                pass
 
         time.sleep(1)
 
